@@ -1,9 +1,16 @@
 import { describe, it, expect } from 'vitest'
 import { reducer } from './use-toast'
+import type { ToastProps } from '@/components/ui/toast'
+
+type ToasterToast = ToastProps & {
+  id: string
+  title?: React.ReactNode
+  description?: React.ReactNode
+}
 
 describe('toast reducer', () => {
   it('adds a toast', () => {
-    const initial = { toasts: [] as any[] }
+    const initial = { toasts: [] as ToasterToast[] }
     const toast = { id: '1', title: 'hi', open: true }
     const state = reducer(initial, { type: 'ADD_TOAST', toast })
     expect(state.toasts).toEqual([toast])
