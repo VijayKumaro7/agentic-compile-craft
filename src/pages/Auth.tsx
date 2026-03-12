@@ -2,44 +2,33 @@
 import { useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 import { Github, Mail } from "lucide-react";
 
 const Auth = () => {
   const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
-  const handleGoogleLogin = async () => {
+  const handleOAuthLogin = async (provider: 'google' | 'github') => {
     try {
       setLoading(true);
       const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
+        provider,
         options: {
           redirectTo: `${window.location.origin}/`,
         },
       });
       if (error) throw error;
     } catch (error) {
-      console.error('Error:', error);
+      const message = error instanceof Error ? error.message : 'Authentication failed. Please try again.';
+      toast({ title: 'Sign in failed', description: message, variant: 'destructive' });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGithubLogin = async () => {
-    try {
-      setLoading(true);
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'github',
-        options: {
-          redirectTo: `${window.location.origin}/`,
-        },
-      });
-      if (error) throw error;
-    } catch (error) {
-      console.error('Error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const handleGoogleLogin = () => handleOAuthLogin('google');
+  const handleGithubLogin = () => handleOAuthLogin('github');
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden">
